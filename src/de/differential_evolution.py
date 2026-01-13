@@ -64,4 +64,56 @@ class DifferentialEvolution:
 
 
     def run(self) -> Tuple[np.ndarray, float, Dict[str, Any]]:
-        raise NotImplementedError
+        pop = self._init_population()
+        fit = self._evaluate_population(pop)
+
+        best_idx = int(np.argmin(fit))
+        best_x = pop[best_idx].copy()
+        best_f = float(fit[best_idx])
+
+        history = {"best_fitness": [best_f], "best_x": [best_x.copy()]}
+
+        for _g in range(self.cfg.generations):
+            new_pop = pop.copy()
+            new_fit = fit.copy()
+
+            for i in range(self.cfg.pop_size):
+                # choose r1,r2,r3 distinct and != i
+                idxs = np.arange(self.cfg.pop_size)
+                idxs = idxs[idxs != i]
+                r1, r2, r3 = self.rng.choice(idxs, size=3, replace=False)
+
+                x_r1 = pop[r1]
+                x_r2 = pop[r2]
+                x_r3 = pop[r3]
+                x_i = pop[i]
+
+                # Mutation: DE/rand/1
+                v = x_r1 + self.cfg.F * (x_r2 - x_r3)
+
+                # Crossover: binomial + forced j_rand
+                j_rand = self.rng.integers(0, self.D)
+                cross_mask = self.rng.random(self.D) < self.cfg.CR
+                cross_mask[j_rand] = True
+
+                u = np.where(cross_mask, v, x_i)
+                u = self._clip_to_bounds(u)
+
+                # Selection (minimization)
+                f_u = float(self.fitness_fn(u))
+                if f_u <= fit[i]:
+                    new_pop[i] = u
+                    new_fit[i] = f_u
+
+            pop, fit = new_pop, new_fit
+
+            gen_best_idx = int(np.argmin(fit))
+            gen_best_f = float(fit[gen_best_idx])
+            if gen_best_f < best_f:
+                best_f = gen_best_f
+                best_x = pop[gen_best_idx].copy()
+
+            history["best_fitness"].append(best_f)
+            history["best_x"].append(best_x.copy())
+
+        return best_x, best_f, history
