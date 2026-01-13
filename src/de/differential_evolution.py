@@ -94,6 +94,7 @@ class DifferentialEvolution:
                 # Crossover: binomial + forced j_rand
                 j_rand = self.rng.integers(0, self.D)
                 cross_mask = self.rng.random(self.D) < self.cfg.CR
+                # Forteaza preluarea a cel putin unei componente din vectorul mutant (previne cazul in care u este identic cu x_i)
                 cross_mask[j_rand] = True
 
                 u = np.where(cross_mask, v, x_i)
