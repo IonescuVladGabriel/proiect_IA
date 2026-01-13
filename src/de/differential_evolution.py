@@ -46,5 +46,22 @@ class DifferentialEvolution:
         self.rng = np.random.default_rng(self.cfg.seed)
         self.D = self.bounds.shape[0]
 
+    def _init_population(self) -> np.ndarray:
+        lo = self.bounds[:, 0]
+        hi = self.bounds[:, 1]
+        return self.rng.uniform(lo, hi, size=(self.cfg.pop_size, self.D))
+
+    def _clip_to_bounds(self, x: np.ndarray) -> np.ndarray:
+        lo = self.bounds[:, 0]
+        hi = self.bounds[:, 1]
+        return np.clip(x, lo, hi)
+
+    def _evaluate_population(self, pop: np.ndarray) -> np.ndarray:
+        fit = np.empty((pop.shape[0],), dtype=float)
+        for i in range(pop.shape[0]):
+            fit[i] = float(self.fitness_fn(pop[i]))
+        return fit
+
+
     def run(self) -> Tuple[np.ndarray, float, Dict[str, Any]]:
         raise NotImplementedError
