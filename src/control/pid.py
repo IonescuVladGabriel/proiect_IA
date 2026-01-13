@@ -9,7 +9,7 @@ class PID:
     u_max: float = 10.0
     integral_limit: float = 10.0
 
-    def post_init(self):
+    def __post_init__(self):
         self.reset()
 
     def reset(self):
