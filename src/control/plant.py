@@ -6,7 +6,7 @@ class SecondOrderPlant:
     wn: float = 2.0
     zeta: float = 0.25
 
-    def post_init(self):
+    def __post_init__(self):
         self.reset()
 
     def reset(self):
@@ -17,7 +17,7 @@ class SecondOrderPlant:
         y = self.y
         ydot = self.ydot
 
-        yddot = -2.0 * self.zeta * self.wn * ydot - (self.wn  2) * y + (self.wn  2) * u
+        yddot = -2.0 * self.zeta * self.wn * ydot - (self.wn ** 2) * y + (self.wn ** 2) * u
         yddot += disturbance
 
         ydot_next = ydot + yddot * dt
