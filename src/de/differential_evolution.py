@@ -88,7 +88,7 @@ class DifferentialEvolution:
                 x_r3 = pop[r3]
                 x_i = pop[i]
 
-                # Mutation: DE/rand/1
+                # Mutatie: DE/rand/1
                 v = x_r1 + self.cfg.F * (x_r2 - x_r3)
 
                 # Crossover: binomial + forced j_rand
@@ -100,7 +100,7 @@ class DifferentialEvolution:
                 u = np.where(cross_mask, v, x_i)
                 u = self._clip_to_bounds(u)
 
-                # Selection (minimization)
+                # Selectie (minimizare)
                 f_u = float(self.fitness_fn(u))
                 if f_u <= fit[i]:
                     new_pop[i] = u
